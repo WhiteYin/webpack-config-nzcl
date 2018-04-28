@@ -1,16 +1,22 @@
-const Webpack = require('webpack');
 const path = require('path');
+const webpack = require('webpack');
 
 // 插件
 const WebpackRemoveHashedFiles = require('webpack-remove-hashed-files');
 const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
 const UglifyJsPlugin = require('webpack/lib/optimize/UglifyJsPlugin');
+// 根据模板自动生成html文件
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+// 打包分析
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const HappyPack = require('happypack');
 
 const distDir = './dist/';
 
 const config = {
     context: path.resolve(__dirname, '../src'),
     entry: {
+        vendor: ['react','react-dom'],
         index: './index.js'
     },
     output: {
@@ -19,34 +25,72 @@ const config = {
         // 生产环境publicPath值为cdn路径
         publicPath: ''
     },
-    rules: [
-        {
-            test: /.jsx?$/,
-            use: 'babel-loader',
-            include: path.resolve(__dirname, '../src')
-        },
-        {
-            test: /.less$/,
-            use: ExtractTextWebpackPlugin.extract({
+    module: {
+        rules: [
+            {
+                test: /.jsx?$/,
+                use: 'babel-loader?cacheDirectory',
+                include: path.resolve(__dirname, '../src')
+            },
+            {
+                test: /.less$/,
+                use: ExtractTextWebpackPlugin.extract({
+                    use: [
+                        {
+                            loader: 'css-loader',
+                            options: {
+                                url: false,
+                                minimize: true,
+                                sourceMap: true
+                            }
+                        },
+                        {
+                            loader: 'postcss-loader'
+                        },
+                        {
+                            loader: 'less-loader'
+                        }
+                    ],
+                    fallback: 'style-loader'
+                })
+            },
+            {
+                // 对非文本文件采用 file-loader 加载
+                test: /\.(gif|png|jpe?g|eot|woff|ttf|pdf|ico)$/,
                 use: [
                     {
-                        loader: 'css-loader'
-                    },
-                    {
-                        loader: 'postcss-loader'
-                    },
-                    {
-                        loader: 'less-loader'
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name].[ext]'
+                        }
                     }
                 ],
-                fallback: 'style-loader'
-            })
-        }
-    ],
+            },
+            {
+                // svg文件使用svg-inline-loader
+                test: /.svg$/,
+                use: 'svg-inline-loader'
+            }
+        ],
+    },
     plugins: [
         new WebpackRemoveHashedFiles(distDir),
+        new webpack.DefinePlugin({
+            'process.env.NODE_ENV': JSON.stringify('production')
+        }),
         new ExtractTextWebpackPlugin({
             filename: '[name].[contenthash:5].css'
+        }),
+        new HtmlWebpackPlugin({
+            title: '首页',
+            template: '../static/index.html',
+            favicon: '../assets/favicon.ico'
+        }),
+        new HtmlWebpackPlugin({
+            filename: '404.html',
+            template: '../static/404.html',
+            inject: false,
+            favicon: '../assets/favicon.ico'
         }),
         // 压缩输出的 JavaScript 代码
         new UglifyJsPlugin({
@@ -61,7 +105,13 @@ const config = {
                 collapse_vars: true,
                 // 提取出出现多次但是没有定义成变量去引用的静态值
                 reduce_vars: true,
-            }
+            },
+            parallel: true
+        }),
+        new BundleAnalyzerPlugin(),
+        new webpack.optimize.CommonsChunkPlugin({
+            names: 'vendor',
+            minChunks: Infinity,
         })
     ]
 };

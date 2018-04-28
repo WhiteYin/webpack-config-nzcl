@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build-dev": "webpack --config config/webpack.config.dev.js",
-    "build-prod": "webpack --config config/webpack.config.prod.js",
+    "build-prod": "set NODE_ENV=production && webpack --config config/webpack.config.prod.js",
     "build": "npm run build-dev && npm run build-prod",
     "start": "webpack-dev-server --config config/webpack.config.dev.js --open"
   },
@@ -39,15 +39,20 @@
     "eslint-plugin-react": "^7.7.0",
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^1.1.11",
+    "happypack": "^4.0.1",
     "html-webpack-plugin": "^3.2.0",
+    "jest": "^22.4.3",
     "less": "^3.0.1",
     "less-loader": "^4.1.0",
     "postcss-loader": "^2.1.4",
     "react": "^16.3.1",
     "react-dom": "^16.3.1",
+    "react-redux": "^5.0.7",
+    "redux": "^4.0.0",
     "style-loader": "^0.20.3",
     "svg-inline-loader": "^0.8.0",
     "webpack": "^3.11.0",
+    "webpack-bundle-analyzer": "^2.11.1",
     "webpack-dev-server": "^2.11.0",
     "webpack-remove-hashed-files": "^1.2.1"
   }

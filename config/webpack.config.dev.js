@@ -3,8 +3,6 @@ const path = require('path');
 
 // 插件
 const WebpackRemoveHashedFiles = require('webpack-remove-hashed-files');
-// 定义全局变量
-const DefinePlugin = require('webpack/lib/DefinePlugin');
 // 根据模板自动生成html文件
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -79,7 +77,7 @@ const config = {
             },
             {
                 // 对非文本文件采用 file-loader 加载
-                test: /\.(gif|png|jpe?g|eot|woff|ttf|svg|pdf)$/,
+                test: /\.(gif|png|jpe?g|eot|woff|ttf|pdf|ico)$/,
                 use: [
                     {
                         loader: 'file-loader',
@@ -98,10 +96,6 @@ const config = {
     },
     plugins: [
         new WebpackRemoveHashedFiles(distDir),
-        new DefinePlugin({
-            // 通过if(PROD)来判断是否属于生产环境
-            PROD: JSON.stringify(false)
-        }),
         new HtmlWebpackPlugin({
             title: '首页',
             template: '../static/index.html',

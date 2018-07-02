@@ -26,8 +26,6 @@ const config = {
     // 开发环境使用轻量级的eval-source-map
     devtool: 'eval-source-map',
     devServer: {
-        // 文件根目录
-        contentBase: path.resolve(__dirname, '../build/'),
         // 使用inline模式实现自动刷新
         inline: true,
         // 开启热更新

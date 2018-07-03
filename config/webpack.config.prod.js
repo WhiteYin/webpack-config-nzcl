@@ -39,7 +39,6 @@ const config = {
                         {
                             loader: 'css-loader',
                             options: {
-                                url: false,
                                 minimize: true,
                                 sourceMap: true
                             }
@@ -61,7 +60,7 @@ const config = {
                     {
                         loader: 'file-loader',
                         options: {
-                            name: '[name].[ext]'
+                            name: 'assets/image/[name].[ext]'
                         }
                     }
                 ],
